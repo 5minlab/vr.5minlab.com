@@ -21,9 +21,9 @@ module.exports = {
     vendor: [
       'es6-promise',
       'three',
+      'webvr-polyfill/build/webvr-polyfill',
+      'three/examples/js/effects/CardboardEffect',
       'three/examples/js/controls/VRControls',
-      // VREffect.js handles stereo camera setup and rendering.
-      'three/examples/js/effects/VREffect',
     ],
     index: ['./src/index.js'],
   },

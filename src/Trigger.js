@@ -78,3 +78,7 @@ Trigger.prototype.value = function(val) {
 Trigger.prototype.forceVisible = function(v) {
   this.triggerMesh.visible = v
 }
+
+if(typeof(module) !== 'undefined') {
+  module.exports = Trigger;
+}

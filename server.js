@@ -16,6 +16,14 @@ if (env.production) {
   app.use('/dist', express.static(__dirname + '/dist'));
 }
 
+app.get('/', function(req, res) {
+  const config = require('./webvr.config.js');
+  res.render('index', {
+    env,
+    WebVRConfig: config,
+  });
+});
+
 const port = Number(process.env.PORT || 3001);
 app.listen(port, function () {
   console.log('server running at 0.0.0.0:3001, go refresh and see magic');

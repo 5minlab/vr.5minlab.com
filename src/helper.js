@@ -1,3 +1,7 @@
+if(typeof(require) !== 'undefined') {
+  var NoSleep = require('../lib/NoSleep');
+}
+
 var Helper = {};
 
 Helper.fullscreenRequest = function(domElement) {

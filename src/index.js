@@ -1,3 +1,12 @@
+if(typeof(require) !== 'undefined') {
+  var Stats = require('three/examples/js/libs/stats.min');
+  var THREE = require('three');
+  var Modes = require('../lib/webvr-boilerplate/modes');
+  var ButtonManager = require('../lib/webvr-boilerplate/button-manager');
+  var Trigger = require('./Trigger');
+  var Helper = require('./helper');
+}
+
 var camera, scene, renderer;
 var effect;
 var button;
