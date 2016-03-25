@@ -4,8 +4,9 @@ var button;
 var displayMode = Modes.NORMAL;
 var controls;
 var stats;
+var clock;
 
-var raycaster = new THREE.Raycaster();
+var triggers = [];
 
 function fillGeometryVertexColors(geometry, color) {
   const faceIndices = [ 'a', 'b', 'c' ];
@@ -23,7 +24,6 @@ init();
 animate();
 
 function init() {
-
   scene = new THREE.Scene();
 
   camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 10 );
@@ -61,16 +61,17 @@ function init() {
   mesh.position.y = 0.75;
   scene.add( mesh );
 
-  var geometry = new THREE.BoxGeometry( 3, 0.1, 3 );
-  fillGeometryVertexColors(geometry, new THREE.Color(0x00ff00));
-
-  // intent/playstore 즉시 띄우는건 자바스크립트로는 안되는듯. 권한 문제로 추정
-  var mesh = new AnchorMesh(geometry, material, [
-    'market://details?id=com.Fiveminlab.SnakeVR',
-    'https://play.google.com/store/apps/details?id=com.Fiveminlab.SnakeVR',
-  ]);
-  mesh.position.y = - 0.1;
-  scene.add( mesh );
+  var snakeVRTrigger = new Trigger(3, function() {
+    setTimeout(function() {
+      var url = 'https://play.google.com/store/apps/details?id=com.Fiveminlab.SnakeVR';
+      console.log(`move link alternative : ${url}`);
+      document.location = url;
+    }, 100);
+  });
+  snakeVRTrigger.position.y = 0.5;
+  snakeVRTrigger.position.x = 1;
+  scene.add(snakeVRTrigger);
+  triggers.push(snakeVRTrigger);
 
   var light = new THREE.DirectionalLight( 0xffffff );
   light.position.set( - 1, 1.5, 0.5 );
@@ -143,6 +144,9 @@ function init() {
 
   // default mode
   button.setMode(displayMode, true);
+
+  clock = new THREE.Clock();
+  clock.start();
 }
 
 function onWindowResize() {
@@ -154,53 +158,27 @@ function onWindowResize() {
 
 }
 
-var counter = 0;
-
-function checkRaycast() {
-  // 처다보는 방향으로 raycast
-  raycaster.set(camera.position, camera.getWorldDirection());
-  raycaster.near = 0.1;
-  raycaster.far = 10;
-
-  var found = false;
-  var intersects = raycaster.intersectObjects(scene.children);
-  for(var i = 0 ; i < intersects.length ; i++) {
-    if(intersects[i].object.type === 'AnchorMesh') {
-      found = true;
-      counter += 1;
-      if(counter > 50) {
-        intersects[i].object.moveLink();
-      }
-    }
-  }
-
-  if(found == false) {
-    counter = 0;
-  }
-
-}
-
 function animate() {
+  var delta = clock.getDelta();
+
   requestAnimationFrame( animate );
   if(typeof(stats) !== 'undefined') {
     stats.update();
   }
   controls.update();
 
-  checkRaycast();
+  for(var i = 0 ; i < triggers.length ; i++) {
+    triggers[i].update(camera, delta);
+  }
 
   render();
 }
 
 function render() {
-
   var time = performance.now() * 0.0002;
   //camera.position.x = Math.cos( time ) * 4;
   //camera.position.z = Math.sin( time ) * 4;
 
-  var mesh = scene.children[ 0 ];
-  mesh.rotation.x = time * 2;
-  mesh.rotation.y = time * 5;
 
   if(displayMode == Modes.VR) {
     effect.render( scene, camera );
