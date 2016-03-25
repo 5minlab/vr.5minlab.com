@@ -2,6 +2,8 @@ var camera, scene, renderer;
 var effect;
 var button;
 var displayMode = Modes.NORMAL;
+var controls;
+var stats;
 
 init();
 animate();
@@ -14,33 +16,44 @@ function init() {
   camera.position.set( 3, 2, 3 );
   camera.focalLength = camera.position.distanceTo( scene.position );
   camera.lookAt( scene.position );
+  controls = new THREE.VRControls(camera);
+
+  // Add a repeating grid as a skybox - for debug
+  var boxWidth = 5;
+  var loader = new THREE.TextureLoader();
+  loader.load('./img/box.png', onTextureLoaded);
+  function onTextureLoaded(texture) {
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(boxWidth, boxWidth);
+    var geometry = new THREE.BoxGeometry(boxWidth, boxWidth, boxWidth);
+    var material = new THREE.MeshBasicMaterial({
+      map: texture,
+      color: 0x01BE00,
+      side: THREE.BackSide
+    });
+    var skybox = new THREE.Mesh(geometry, material);
+    scene.add(skybox);
+  }
 
   var geometry = new THREE.TorusKnotGeometry( 0.4, 0.15, 150, 20 );;
-  var material = new THREE.MeshStandardMaterial( { roughness: 0.01, metalness: 0.2 } );
+  var material = new THREE.MeshLambertMaterial({
+  });
   var mesh = new THREE.Mesh( geometry, material );
   mesh.position.y = 0.75;
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
   scene.add( mesh );
 
   var geometry = new THREE.BoxGeometry( 3, 0.1, 3 );
-  var material = new THREE.MeshStandardMaterial( { roughness: 1.0, metalness: 0.0 } );
   var mesh = new THREE.Mesh( geometry, material );
   mesh.position.y = - 0.1;
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
   scene.add( mesh );
 
   var light = new THREE.DirectionalLight( 0x8800ff );
   light.position.set( - 1, 1.5, 0.5 );
-  light.castShadow = true;
-  light.shadow.camera.zoom = 4;
   scene.add( light );
 
   var light = new THREE.DirectionalLight( 0xff0000 );
   light.position.set( 1, 1.5, - 0.5 );
-  light.castShadow = true;
-  light.shadow.camera.zoom = 4;
   scene.add( light );
 
   //
@@ -60,6 +73,17 @@ function init() {
   //
 
   window.addEventListener( 'resize', onWindowResize, false );
+
+  // stats for debug
+  var isDev = window.location.href.indexOf("?dev")  > -1;
+  if(isDev) {
+    stats = new Stats();
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.top = '0px';
+    stats.domElement.style.left = '0px';
+    document.getElementById('container').appendChild(stats.domElement);
+  }
+
 
   // fullscreen and extra buttons
   button = new ButtonManager();
@@ -111,8 +135,11 @@ function onWindowResize() {
 }
 
 function animate() {
-
   requestAnimationFrame( animate );
+  if(typeof(stats) !== 'undefined') {
+    stats.update();
+  }
+  controls.update();
   render();
 
 }
@@ -120,9 +147,8 @@ function animate() {
 function render() {
 
   var time = performance.now() * 0.0002;
-  camera.position.x = Math.cos( time ) * 4;
-  camera.position.z = Math.sin( time ) * 4;
-  camera.lookAt( new THREE.Vector3() );
+  //camera.position.x = Math.cos( time ) * 4;
+  //camera.position.z = Math.sin( time ) * 4;
 
   var mesh = scene.children[ 0 ];
   mesh.rotation.x = time * 2;
