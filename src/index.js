@@ -43,6 +43,68 @@ function init() {
   loader.load('/scene.json', function(obj) {
     scene = obj;
 
+    var loader = new THREE.TextureLoader();
+    loader.load('/img/batch-gen.png', function(texture) {
+      var material = new THREE.MeshBasicMaterial({
+        map: texture,
+      });
+
+      function adjustTexcoord(geometry, minX, maxX, minY, maxY) {
+        for(var i = 0 ; i < geometry.faceVertexUvs[0].length ; i++) {
+          var f = geometry.faceVertexUvs[0][i];
+          for(var j = 0 ; j < f.length ; j++) {
+            if(f[j].x === 0) {
+              f[j].x = minX;
+            } else if(f[j].x === 1) {
+              f[j].x = maxX;
+            }
+            if(f[j].y === 0) {
+              f[j].y = minY;
+            } else if(f[j].y === 1) {
+              f[j].y = maxY;
+            }
+          }
+        }
+        geometry.uvsNeedUpdate = true;
+      }
+
+      // 회사 로고
+      var geometry = new THREE.PlaneGeometry(1, 1);
+      adjustTexcoord(geometry, 0.5, 1, 0.5, 0.75);
+      var mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(2.8, 4.35, -0.2);
+      mesh.scale.set(3.3, 1.95, 1);
+      mesh.rotation.y = -Math.PI/2;
+      scene.add(mesh);
+
+      // sky
+      var geometry = new THREE.PlaneGeometry(30, 15);
+      adjustTexcoord(geometry, 0, 0.5, 0.5, 1);
+      var mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(-10, 5, 0);
+      mesh.rotation.y = Math.PI/2;
+      scene.add(mesh);
+
+      // snake vr
+      var snakeVRTrigger = new Trigger(2, material, function() {
+        setTimeout(function() {
+          var url = 'https://play.google.com/store/apps/details?id=com.Fiveminlab.SnakeVR';
+          console.log(`move link alternative : ${url}`);
+          document.location = url;
+        }, 100);
+      });
+      adjustTexcoord(snakeVRTrigger.triggerMesh.geometry, 0.5, 1, 0.75, 1);
+
+      snakeVRTrigger.position.set(0, 4.35, 2.8);
+      snakeVRTrigger.scale.set(3.3, 1.95, 1);
+      snakeVRTrigger.rotation.y = Math.PI;
+      snakeVRTrigger.forceVisible(true);
+      scene.add(snakeVRTrigger);
+      triggers.push(snakeVRTrigger);
+
+    });
+
+    /*
     // TODO 링크 이미지를 하나로 합칠수 있다면 DrawCall을 줄일수 있을것이다
     var loader = new THREE.TextureLoader();
     loader.load('/img/app_upper_for_vrweb.png', function(texture) {
@@ -64,31 +126,7 @@ function init() {
       scene.add(snakeVRTrigger);
       triggers.push(snakeVRTrigger);
     });
-
-    loader.load('/img/company_logo.png', function(texture) {
-      var material = new THREE.MeshBasicMaterial({
-        map: texture,
-      });
-      var geometry = new THREE.PlaneGeometry(1, 1);
-      var mesh = new THREE.Mesh(geometry, material);
-
-      mesh.position.set(2.8, 4.35, -0.2);
-      mesh.scale.set(3.3, 1.95, 1);
-      mesh.rotation.y = -Math.PI/2;
-      scene.add(mesh);
-    });
-
-    loader.load('/img/blue-sky-resize.jpg', function(texture) {
-      var material = new THREE.MeshBasicMaterial({
-        map: texture,
-      });
-      var geometry = new THREE.PlaneGeometry(30, 15);
-      var mesh = new THREE.Mesh(geometry, material);
-      mesh.position.set(-10, 5, 0);
-      mesh.rotation.y = Math.PI/2;
-
-      scene.add(mesh);
-    });
+    */
   });
 
   //
