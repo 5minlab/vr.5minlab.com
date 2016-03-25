@@ -1,4 +1,4 @@
-function Trigger(delay, callback) {
+function Trigger(delay, triggerMaterial, callback) {
   THREE.Object3D.call(this);
   this.type = 'Trigger';
   this.delay = delay;
@@ -12,19 +12,21 @@ function Trigger(delay, callback) {
     transparent: true,
   });
 
-  var debugMaterial = new THREE.MeshBasicMaterial({
-    color: 0x0000ff,
-    wireframe: true,
-  });
+  //var debugMaterial = new THREE.MeshBasicMaterial({
+  //  color: 0x0000ff,
+  //  wireframe: true,
+  //});
 
   this.visibleGeometry = new THREE.PlaneGeometry(1, 1);
   this.value(0);
   this.visibleMesh = new THREE.Mesh(this.visibleGeometry, material);
+  this.visibleMesh.position.z = 0.01;
+
   this.add(this.visibleMesh);
 
   //this.triggerGeometry = new THREE.CubeGeometry(1, 1, 1);
   this.triggerGeometry = new THREE.PlaneGeometry(1, 1);
-  this.triggerMesh = new THREE.Mesh(this.triggerGeometry, debugMaterial);
+  this.triggerMesh = new THREE.Mesh(this.triggerGeometry, triggerMaterial);
   this.triggerMesh.visible = false;
   this.add(this.triggerMesh);
 
@@ -69,7 +71,7 @@ Trigger.prototype.value = function(val) {
 
   if(this.curr === this.delay && this.fired == false) {
     this.fired = true;
-    this.callback();
+    //this.callback();
   }
 }
 

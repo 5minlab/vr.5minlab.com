@@ -23,66 +23,90 @@ function fillGeometryVertexColors(geometry, color) {
 init();
 animate();
 
-function applyDemoScene(scene) {
-  // Add a repeating grid as a skybox - for debug
-  var boxWidth = 5;
-  var loader = new THREE.TextureLoader();
-  loader.load('./img/box.png', onTextureLoaded);
-  function onTextureLoaded(texture) {
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(boxWidth, boxWidth);
-    var geometry = new THREE.BoxGeometry(boxWidth, boxWidth, boxWidth);
-    var material = new THREE.MeshBasicMaterial({
-      map: texture,
-      color: 0x01BE00,
-      side: THREE.BackSide
-    });
-    var skybox = new THREE.Mesh(geometry, material);
-    scene.add(skybox);
-  }
-
-  var material = new THREE.MeshLambertMaterial({
-    color: 0xffffff,
-    vertexColors: THREE.VertexColors,
-  });
-
-  var geometry = new THREE.TorusKnotGeometry( 0.4, 0.15, 150, 20 );;
-  fillGeometryVertexColors(geometry, new THREE.Color(0xff0000));
-  var mesh = new THREE.Mesh( geometry, material );
-  mesh.position.y = 1;
-  mesh.position.z = -2;
-  scene.add( mesh );
-
-  var light = new THREE.DirectionalLight( 0xffffff );
-  light.position.set(-1, 1.5, 0.5 );
-  scene.add( light );
-}
-
 function init() {
   scene = new THREE.Scene();
 
-  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.set(0, 3, 0);
   controls = new THREE.VRControls(camera);
 
-  //applyDemoScene(scene);
   var loader = new THREE.ObjectLoader();
   loader.load('/scene.json', function(obj) {
     scene = obj
 
-    var snakeVRTrigger = new Trigger(3, function() {
-      setTimeout(function() {
-        var url = 'https://play.google.com/store/apps/details?id=com.Fiveminlab.SnakeVR';
-        console.log(`move link alternative : ${url}`);
-        document.location = url;
-      }, 100);
+    // TODO 링크 이미지를 하나로 합칠수 있다면 DrawCall을 줄일수 있을것이다
+    var loader = new THREE.TextureLoader();
+    loader.load('/img/app_upper_for_vrweb.png', function(texture) {
+      var triggerMaterial = new THREE.MeshBasicMaterial({
+        map: texture,
+      });
+
+      var snakeVRTrigger = new Trigger(2, triggerMaterial, function() {
+        setTimeout(function() {
+          var url = 'https://play.google.com/store/apps/details?id=com.Fiveminlab.SnakeVR';
+          console.log(`move link alternative : ${url}`);
+          document.location = url;
+        }, 100);
+      });
+      snakeVRTrigger.position.set(0, 4.35, 2.8);
+      snakeVRTrigger.scale.set(3.3, 1.95, 1);
+      snakeVRTrigger.rotation.y = Math.PI;
+      snakeVRTrigger.forceVisible(true);
+      scene.add(snakeVRTrigger);
+      triggers.push(snakeVRTrigger);
     });
-    snakeVRTrigger.position.set(1, 0.5, -1);
-    snakeVRTrigger.scale.set(0.5, 0.5, 0.5);
-    snakeVRTrigger.forceVisible(true);
-    scene.add(snakeVRTrigger);
-    triggers.push(snakeVRTrigger);
+
+    loader.load('/img/box.png', function(texture) {
+      var material = new THREE.MeshBasicMaterial({
+        map: texture,
+      });
+      var geometry = new THREE.PlaneGeometry(1, 1);
+      var mesh = new THREE.Mesh(geometry, material);
+
+      mesh.position.set(2.8, 4.35, -0.2);
+      mesh.scale.set(3.3, 1.95, 1);
+      mesh.rotation.y = -Math.PI/2;
+      scene.add(mesh);
+    });
+
+    // skybox
+    /*
+    var loader = new THREE.TextureLoader();
+    loader.load('./img/skybox_texture.jpg', function(texture) {
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(boxWidth, boxWidth);
+
+      var geometry = new THREE.Geometry();
+      var size = 100;
+
+      // front
+      geometry.vertices.push(
+
+      );
+      var frontGeom.vertice
+
+      // back
+
+      // left
+
+      // right
+
+      // top
+
+      // bottom
+
+
+      var material = new THREE.MeshBasicMaterial({
+        map: texture,
+        side: THREE.BackSide
+      });
+
+      var skybox = new THREE.Mesh(geometry, material);
+      scene.add(skybox);
+    });
+    */
+
   });
 
   //
