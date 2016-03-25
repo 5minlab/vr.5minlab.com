@@ -77,14 +77,6 @@ function init() {
       mesh.rotation.y = -Math.PI/2;
       scene.add(mesh);
 
-      // sky
-      var geometry = new THREE.PlaneGeometry(30, 15);
-      adjustTexcoord(geometry, 0, 0.5, 0.5, 1);
-      var mesh = new THREE.Mesh(geometry, material);
-      mesh.position.set(-10, 5, 0);
-      mesh.rotation.y = Math.PI/2;
-      scene.add(mesh);
-
       // snake vr
       var snakeVRTrigger = new Trigger(2, material, function() {
         setTimeout(function() {
@@ -101,32 +93,19 @@ function init() {
       snakeVRTrigger.forceVisible(true);
       scene.add(snakeVRTrigger);
       triggers.push(snakeVRTrigger);
-
     });
 
-    /*
-    // TODO 링크 이미지를 하나로 합칠수 있다면 DrawCall을 줄일수 있을것이다
-    var loader = new THREE.TextureLoader();
-    loader.load('/img/app_upper_for_vrweb.png', function(texture) {
-      var triggerMaterial = new THREE.MeshBasicMaterial({
+    // sky
+    loader.load('/img/blue-sky-resize.jpg', function(texture) {
+      var material = new THREE.MeshBasicMaterial({
         map: texture,
       });
-
-      var snakeVRTrigger = new Trigger(2, triggerMaterial, function() {
-        setTimeout(function() {
-          var url = 'https://play.google.com/store/apps/details?id=com.Fiveminlab.SnakeVR';
-          console.log(`move link alternative : ${url}`);
-          document.location = url;
-        }, 100);
-      });
-      snakeVRTrigger.position.set(0, 4.35, 2.8);
-      snakeVRTrigger.scale.set(3.3, 1.95, 1);
-      snakeVRTrigger.rotation.y = Math.PI;
-      snakeVRTrigger.forceVisible(true);
-      scene.add(snakeVRTrigger);
-      triggers.push(snakeVRTrigger);
+      var geometry = new THREE.PlaneGeometry(30, 15);
+      var mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(-10, 5, 0);
+      mesh.rotation.y = Math.PI/2;
+      scene.add(mesh);
     });
-    */
   });
 
   //
