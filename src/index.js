@@ -23,15 +23,7 @@ function fillGeometryVertexColors(geometry, color) {
 init();
 animate();
 
-function init() {
-  scene = new THREE.Scene();
-
-  camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 10 );
-  camera.position.set( 3, 2, 3 );
-  camera.focalLength = camera.position.distanceTo( scene.position );
-  camera.lookAt( scene.position );
-  controls = new THREE.VRControls(camera);
-
+function applyDemoScene(scene) {
   // Add a repeating grid as a skybox - for debug
   var boxWidth = 5;
   var loader = new THREE.TextureLoader();
@@ -58,24 +50,40 @@ function init() {
   var geometry = new THREE.TorusKnotGeometry( 0.4, 0.15, 150, 20 );;
   fillGeometryVertexColors(geometry, new THREE.Color(0xff0000));
   var mesh = new THREE.Mesh( geometry, material );
-  mesh.position.y = 0.75;
+  mesh.position.y = 1;
+  mesh.position.z = -2;
   scene.add( mesh );
 
-  var snakeVRTrigger = new Trigger(3, function() {
-    setTimeout(function() {
-      var url = 'https://play.google.com/store/apps/details?id=com.Fiveminlab.SnakeVR';
-      console.log(`move link alternative : ${url}`);
-      document.location = url;
-    }, 100);
-  });
-  snakeVRTrigger.position.y = 0.5;
-  snakeVRTrigger.position.x = 1;
-  scene.add(snakeVRTrigger);
-  triggers.push(snakeVRTrigger);
-
   var light = new THREE.DirectionalLight( 0xffffff );
-  light.position.set( - 1, 1.5, 0.5 );
+  light.position.set(-1, 1.5, 0.5 );
   scene.add( light );
+}
+
+function init() {
+  scene = new THREE.Scene();
+
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.set(0, 3, 0);
+  controls = new THREE.VRControls(camera);
+
+  //applyDemoScene(scene);
+  var loader = new THREE.ObjectLoader();
+  loader.load('/scene.json', function(obj) {
+    scene = obj
+
+    var snakeVRTrigger = new Trigger(3, function() {
+      setTimeout(function() {
+        var url = 'https://play.google.com/store/apps/details?id=com.Fiveminlab.SnakeVR';
+        console.log(`move link alternative : ${url}`);
+        document.location = url;
+      }, 100);
+    });
+    snakeVRTrigger.position.set(1, 0.5, -1);
+    snakeVRTrigger.scale.set(0.5, 0.5, 0.5);
+    snakeVRTrigger.forceVisible(true);
+    scene.add(snakeVRTrigger);
+    triggers.push(snakeVRTrigger);
+  });
 
   //
 
@@ -175,11 +183,6 @@ function animate() {
 }
 
 function render() {
-  var time = performance.now() * 0.0002;
-  //camera.position.x = Math.cos( time ) * 4;
-  //camera.position.z = Math.sin( time ) * 4;
-
-
   if(displayMode == Modes.VR) {
     effect.render( scene, camera );
   } else {

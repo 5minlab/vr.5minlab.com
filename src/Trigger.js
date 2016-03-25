@@ -12,6 +12,11 @@ function Trigger(delay, callback) {
     transparent: true,
   });
 
+  var debugMaterial = new THREE.MeshBasicMaterial({
+    color: 0x0000ff,
+    wireframe: true,
+  });
+
   this.visibleGeometry = new THREE.PlaneGeometry(1, 1);
   this.value(0);
   this.visibleMesh = new THREE.Mesh(this.visibleGeometry, material);
@@ -19,12 +24,11 @@ function Trigger(delay, callback) {
 
   //this.triggerGeometry = new THREE.CubeGeometry(1, 1, 1);
   this.triggerGeometry = new THREE.PlaneGeometry(1, 1);
-  this.triggerMesh = new THREE.Mesh(this.triggerGeometry, material);
+  this.triggerMesh = new THREE.Mesh(this.triggerGeometry, debugMaterial);
   this.triggerMesh.visible = false;
   this.add(this.triggerMesh);
 
   this.raycaster = new THREE.Raycaster();
-
 }
 
 Trigger.prototype = Object.create(THREE.Object3D.prototype);
@@ -39,6 +43,7 @@ Trigger.prototype.update = function(camera, delta) {
 
   // mesh가 visible이 아니면 raycast가 안돌아가더라. 그래서 잠깐동안 상태 변경
   var mesh = this.triggerMesh;
+  var prev = mesh.visible;
   mesh.visible = true;
   var intersects = raycaster.intersectObjects([mesh]);
   if(intersects.length === 0) {
@@ -53,7 +58,7 @@ Trigger.prototype.update = function(camera, delta) {
     var val = this.curr / this.delay;
     this.value(val);
   }
-  mesh.visible = false;
+  mesh.visible = prev;
 }
 
 Trigger.prototype.value = function(val) {
@@ -66,4 +71,8 @@ Trigger.prototype.value = function(val) {
     this.fired = true;
     this.callback();
   }
+}
+
+Trigger.prototype.forceVisible = function(v) {
+  this.triggerMesh.visible = v
 }
