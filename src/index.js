@@ -56,7 +56,7 @@ function init() {
       triggers.push(snakeVRTrigger);
     });
 
-    loader.load('/img/box.png', function(texture) {
+    loader.load('/img/company_logo.png', function(texture) {
       var material = new THREE.MeshBasicMaterial({
         map: texture,
       });
@@ -69,44 +69,17 @@ function init() {
       scene.add(mesh);
     });
 
-    // skybox
-    /*
-    var loader = new THREE.TextureLoader();
-    loader.load('./img/skybox_texture.jpg', function(texture) {
-      texture.wrapS = THREE.RepeatWrapping;
-      texture.wrapT = THREE.RepeatWrapping;
-      texture.repeat.set(boxWidth, boxWidth);
-
-      var geometry = new THREE.Geometry();
-      var size = 100;
-
-      // front
-      geometry.vertices.push(
-
-      );
-      var frontGeom.vertice
-
-      // back
-
-      // left
-
-      // right
-
-      // top
-
-      // bottom
-
-
+    loader.load('/img/blue-sky-resize.jpg', function(texture) {
       var material = new THREE.MeshBasicMaterial({
         map: texture,
-        side: THREE.BackSide
       });
+      var geometry = new THREE.PlaneGeometry(30, 15);
+      var mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(-10, 5, 0);
+      mesh.rotation.y = Math.PI/2;
 
-      var skybox = new THREE.Mesh(geometry, material);
-      scene.add(skybox);
+      scene.add(mesh);
     });
-    */
-
   });
 
   //
