@@ -41,7 +41,7 @@ function init() {
 
   var loader = new THREE.ObjectLoader();
   loader.load('/scene.json', function(obj) {
-    scene = obj
+    scene = obj;
 
     // TODO 링크 이미지를 하나로 합칠수 있다면 DrawCall을 줄일수 있을것이다
     var loader = new THREE.TextureLoader();
@@ -95,9 +95,17 @@ function init() {
 
   renderer = new THREE.WebGLRenderer( { antialias: false } );
   renderer.setClearColor( 0x101010 );
-  renderer.setPixelRatio( window.devicePixelRatio );
+
+  function getDevicePixelRatio() {
+    var ratio = window.devicePixelRatio;
+    if(ratio > 2) {
+      ratio = 2;
+    }
+    return ratio;
+  }
+  renderer.setPixelRatio(getDevicePixelRatio());
+
   renderer.setSize( window.innerWidth, window.innerHeight );
-  renderer.shadowMap.enabled = true;
   document.body.appendChild( renderer.domElement );
 
   //
