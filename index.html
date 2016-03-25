@@ -1,70 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Project Kanau</title>
+    <title>5minlab - 5분실험실</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <link rel="manifest" href="/manifest.json">
     <style>
       body {
-        width: 100%;
-        height: 100%;
         background-color: #000;
-        color: #fff;
+        color: #FFF;
         margin: 0px;
-        padding: 0;
         overflow: hidden;
       }
     </style>
   </head>
-
   <body>
+    <div id="container"></div>
+
+    <script>
+      function getWebVRConfig() {
+        var defaultValue = {};
+        return defaultValue;
+      }
+      WebVRConfig = getWebVRConfig();
+      console.log("WebVRConfig : " + JSON.stringify(WebVRConfig));
+    </script>
+
+    <!--
+    <script src="./node_modules/es6-promise/dist/es6-promise.js"></script>
+    -->
+
+    
+      <script src="/dist/vendor.bundle.js"></script>
+      <script src="/dist/index.bundle.js"></script>
+    
+
+    <!-- google analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-66505862-2', 'auto');
+      ga('send', 'pageview');
+
+    </script>
   </body>
-
-  <script>
-    /*
-     * Debug parameters.
-     */
-    WebVRConfig = {
-      /**
-       * webvr-polyfill configuration
-       */
-
-      // Forces availability of VR mode.
-      FORCE_ENABLE_VR: true, // Default: false.
-      // Complementary filter coefficient. 0 for accelerometer, 1 for gyro.
-      //K_FILTER: 0.98, // Default: 0.98.
-      // How far into the future to predict during fast motion.
-      //PREDICTION_TIME_S: 0.040, // Default: 0.040 (in seconds).
-      // Flag to disable touch panner. In case you have your own touch controls
-      //TOUCH_PANNER_DISABLED: true, // Default: false.
-      // Enable yaw panning only, disabling roll and pitch. This can be useful for
-      // panoramas with nothing interesting above or below.
-      //YAW_ONLY: true, // Default: false.
-
-      /**
-       * webvr-boilerplate configuration
-       */
-      // Forces distortion in VR mode.
-      //FORCE_DISTORTION: true, // Default: false.
-      // Override the distortion background color.
-      // DISTORTION_BGCOLOR: {x: 1, y: 0, z: 0, w: 1}, // Default: (0,0,0,1).
-      // Prevent distortion from happening.
-      //PREVENT_DISTORTION: true, // Default: false.
-      // Show eye centers for debugging.
-      // SHOW_EYE_CENTERS: true, // Default: false.
-      // Prevent the online DPDB from being fetched.
-      // NO_DPDB_FETCH: true,  // Default: false.
-    };
-  </script>
-
-  <script src="/node_modules/webvr-polyfill/build/webvr-polyfill.js"></script>
-
-  
-    <script src="/dist/vendor.bundle.js"></script>
-    <script src="/dist/index.bundle.js"></script>
-  
 </html>
