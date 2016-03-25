@@ -5,6 +5,20 @@ var displayMode = Modes.NORMAL;
 var controls;
 var stats;
 
+var raycaster = new THREE.Raycaster();
+
+function fillGeometryVertexColors(geometry, color) {
+  const faceIndices = [ 'a', 'b', 'c' ];
+  for(let i = 0 ; i < geometry.faces.length ; i++) {
+    let f = geometry.faces[i];
+    for(let j = 0 ; j < 3 ; j++) {
+      let vertexIndex = f[ faceIndices[ j ] ];
+      let p = geometry.vertices[ vertexIndex ];
+      f.vertexColors[ j ] = color;
+    }
+  }
+}
+
 init();
 animate();
 
@@ -36,24 +50,30 @@ function init() {
     scene.add(skybox);
   }
 
-  var geometry = new THREE.TorusKnotGeometry( 0.4, 0.15, 150, 20 );;
   var material = new THREE.MeshLambertMaterial({
+    color: 0xffffff,
+    vertexColors: THREE.VertexColors,
   });
+
+  var geometry = new THREE.TorusKnotGeometry( 0.4, 0.15, 150, 20 );;
+  fillGeometryVertexColors(geometry, new THREE.Color(0xff0000));
   var mesh = new THREE.Mesh( geometry, material );
   mesh.position.y = 0.75;
   scene.add( mesh );
 
   var geometry = new THREE.BoxGeometry( 3, 0.1, 3 );
-  var mesh = new THREE.Mesh( geometry, material );
+  fillGeometryVertexColors(geometry, new THREE.Color(0x00ff00));
+
+  // intent/playstore 즉시 띄우는건 자바스크립트로는 안되는듯. 권한 문제로 추정
+  var mesh = new AnchorMesh(geometry, material, [
+    'market://details?id=com.Fiveminlab.SnakeVR',
+    'https://play.google.com/store/apps/details?id=com.Fiveminlab.SnakeVR',
+  ]);
   mesh.position.y = - 0.1;
   scene.add( mesh );
 
-  var light = new THREE.DirectionalLight( 0x8800ff );
+  var light = new THREE.DirectionalLight( 0xffffff );
   light.position.set( - 1, 1.5, 0.5 );
-  scene.add( light );
-
-  var light = new THREE.DirectionalLight( 0xff0000 );
-  light.position.set( 1, 1.5, - 0.5 );
   scene.add( light );
 
   //
@@ -134,14 +154,42 @@ function onWindowResize() {
 
 }
 
+var counter = 0;
+
+function checkRaycast() {
+  // 처다보는 방향으로 raycast
+  raycaster.set(camera.position, camera.getWorldDirection());
+  raycaster.near = 0.1;
+  raycaster.far = 10;
+
+  var found = false;
+  var intersects = raycaster.intersectObjects(scene.children);
+  for(var i = 0 ; i < intersects.length ; i++) {
+    if(intersects[i].object.type === 'AnchorMesh') {
+      found = true;
+      counter += 1;
+      if(counter > 50) {
+        intersects[i].object.moveLink();
+      }
+    }
+  }
+
+  if(found == false) {
+    counter = 0;
+  }
+
+}
+
 function animate() {
   requestAnimationFrame( animate );
   if(typeof(stats) !== 'undefined') {
     stats.update();
   }
   controls.update();
-  render();
 
+  checkRaycast();
+
+  render();
 }
 
 function render() {
