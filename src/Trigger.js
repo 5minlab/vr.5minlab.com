@@ -71,7 +71,7 @@ Trigger.prototype.value = function(val) {
 
   if(this.curr === this.delay && this.fired == false) {
     this.fired = true;
-    //this.callback();
+    this.callback();
   }
 }
 
