@@ -35,12 +35,10 @@
 		}],
 	"materials": [
 		{
-			"uuid": "DCD90A0B-4916-417F-A853-59D5723493FD",
-			"type": "MeshPhongMaterial",
+			"uuid": "0D3C8AA4-0AAA-4626-BDE8-35B7BE6131BF",
+			"type": "MeshLambertMaterial",
 			"color": 16777215,
 			"emissive": 0,
-			"specular": 1118481,
-			"shininess": 30,
 			"vertexColors": 2
 		}],
 	"object": {
@@ -49,12 +47,6 @@
 		"name": "Scene",
 		"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
 		"children": [
-			{
-				"uuid": "CD5DB577-9944-4059-9039-FDE9E7DB4AF9",
-				"type": "Group",
-				"name": "5minvr.dae",
-				"matrix": [0.10000000149011612,0,0,0,0,0.10000000149011612,0,0,0,0,0.10000000149011612,0,-3.2182674407958984,0,3.2400410175323486,1]
-			},
 			{
 				"uuid": "03D6B538-1E4F-4D96-B191-3B40A3D4BFDB",
 				"type": "PointLight",
@@ -93,7 +85,7 @@
 						"name": "5minvr",
 						"matrix": [-0.9999987483024597,0,-0.0015926528722047806,0,0,1,0,0,0.0015926528722047806,0,-0.9999987483024597,0,32,32,-32,1],
 						"geometry": "3EC8426E-23D2-4D0C-91F1-AB738BBA3595",
-						"material": "DCD90A0B-4916-417F-A853-59D5723493FD"
+						"material": "0D3C8AA4-0AAA-4626-BDE8-35B7BE6131BF"
 					}]
 			}]
 	}
