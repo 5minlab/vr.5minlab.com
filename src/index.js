@@ -43,6 +43,30 @@ function init() {
   loader.load('/scene.json', function(obj) {
     scene = obj;
 
+    // 폰을 들고있는 방향에 따라서 기본 방향이 달라진다
+    // 기본 방향에 맞춰서 씬 자체를 돌려두기
+    // 해당 방향에 맞춰서 객체를 배치하지 않으면 시작하는 순간부터
+    // 반대 방향을 처다볼수 있다
+    if(typeof(window.orientation) === 'undefined' || window.orientation === 0) {
+      // 기본. portrait
+      console.log('device orientation : portrait');
+      scene.rotation.y = Math.PI/2;
+
+    } else if(window.orientation === 90) {
+      // ([display] o)
+      console.log('device orientation : landscape right');
+
+    } else if(window.orientation === -90) {
+      // (o [display])
+      console.log('device orientation : landscape left');
+      scene.rotation.y = Math.PI;
+
+    } else {
+      // upside down
+      console.log('device orientation : upside down');
+      scene.rotation.y = Math.PI * 1.5;
+    }
+
     var loader = new THREE.TextureLoader();
     loader.load('/img/batch-gen.png', function(texture) {
       var material = new THREE.MeshBasicMaterial({
