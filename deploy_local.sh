@@ -20,32 +20,7 @@ function copy_cname {
 }
 
 function dump_html {
-	NODE_ENV=production npm run server &
-	PID=$!
-	echo "server pid : $PID"
-
-	host="http://op-haruna.5ml.io:3001"
-
-	for i in {1..60}; do
-		output=$(curl $host/test/ -s)
-		if [[ $output == "" ]]; then
-			echo "server is launching... $i"
-			sleep 1
-		else
-			break
-		fi
-	done
-
-	urls=(
-		"/"
-	)
-	for url in ${urls[@]}; do
-		mkdir -p output/$url
-		curl $host$url -s > output/$url/index.html
-	done
-
-	kill -9 $PID
-	echo "kill $PID"
+	NODE_ENV=dist node server.js
 }
 
 publish_webpack
