@@ -1,0 +1,23 @@
+language: node_js
+
+node_js:
+  - "5"
+
+sudo: false
+
+env:
+  secure: "ArjOMy5lrlu3QOK2UNxWhHjJzNTvSs71Eib9Z7nejM2gmOEzrtB4+W/otuyg1Nq889xBu6ZMULhovsY6mSenKFMwU0gbqZK70hfk26vg5PzzOETJTgBFXHxGD4CB+0Dkilprc748P9m5STMo0c4gC36A604KbHDNq8usIiSlGJ3kSGVsyseFF4jRQF0i3ubBhFveLs9VTdAxWBRvxClUL8PjEGoJ0dsT4Z3FNhR4/tIVWk7YgBDhbiO5FsxxTWOP+iQlasYQukuRYFVMpNC6UdBCN5qpC4lUnZTju4IO+JzmBZqlg9XlQ3ivkHKZ+xvlZ62QSPYQUgiJEJ0A+5d9Dooz2o0tvY2O+jihtYGh+Q7GlgRMRMPeKugsxQXuIZ7oaK0NRL5SqsR0IBiDgsTCtR18zwuhqn+VxrkVLMRxd1TSwyUe4xT9Qz7K55KtLUkppXNSPv1qN7GuIqj34GeMoDoTNZoZZmEE+jW4gmAX/2ECyZ9SUt9RZW0evUQpzm+4Z0Jp3GGadOFEiUmVsaLRhDKpJkTOKsBKr5Yd5jiS8hGAl5AILyiQXZdojHyGGaRqPiEUxkFps+XKPcJ3pSxFcEtFcgt5wHXieinatetCz+usmDLEyyr8qnnv8nnyvwtxQy9hSr0r44wQxd5MxKEUi6llABRTFc2LmzTY2MtRnI0="
+
+before_install:
+  - git config --global user.email "dummy@5minlab.com"
+  - git config --global user.name "Travis"
+
+script:
+  - ./deploy_travis.sh
+
+branches:
+  only:
+    - master
+
+notifications:
+  email: false
