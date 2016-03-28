@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git clone --depth 1 --quiet https://${GH_TOKEN}@github.com/5minlab/vr.5minlab.com.git --branch gh-pages
+git clone --depth 1 --quiet --branch gh-pages https://${GH_TOKEN}@github.com/5minlab/vr.5minlab.com.git gh-pages
 
 rm -rf gh-pages/*
 ls -al gh-pages
