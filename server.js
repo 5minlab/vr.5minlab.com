@@ -8,7 +8,7 @@ const http = require('http');
 const port = Number(process.env.PORT || 3001);
 
 app.set('view engine', 'ejs');
-app.use('/', express.static(__dirname));
+app.use('/', express.static(path.join(__dirname, 'public')));
 
 const env = {
   production: (process.env.NODE_ENV === 'production') || (process.env.NODE_ENV == 'dist'),

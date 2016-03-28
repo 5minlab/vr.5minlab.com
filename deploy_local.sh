@@ -11,8 +11,7 @@ function publish_webpack {
 }
 
 function copy_static {
-	cp -r img output
-	cp -r scene.json output
+	cp -r public/* output
 }
 
 function copy_cname {
