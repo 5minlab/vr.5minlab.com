@@ -4,7 +4,7 @@ mkdir -p output
 rm -rf output/*
 
 function publish_webpack {
-	webpack --progress --colors --config webpack.config.prod.js
+	./node_modules/.bin/webpack --progress --colors --config webpack.config.prod.js
 	target_dir="output/dist"
 	mkdir -p $target_dir
 	cp dist/*.js $target_dir

@@ -37,6 +37,8 @@ Trigger.prototype = Object.create(THREE.Object3D.prototype);
 Trigger.prototype.constructor = Trigger;
 
 Trigger.prototype.update = function(camera, delta) {
+  if(!this.callback) { return; }
+
   var raycaster = this.raycaster;
 
   raycaster.set(camera.position, camera.getWorldDirection());

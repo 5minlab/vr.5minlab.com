@@ -8,6 +8,7 @@ if(typeof(require) !== 'undefined') {
 }
 
 var camera, scene, renderer;
+var cursor;
 var effect;
 var button;
 var displayMode = Modes.NORMAL;
@@ -29,19 +30,69 @@ function fillGeometryVertexColors(geometry, color) {
   }
 }
 
+var updateFunctions = [];
+
 init();
 animate();
+
+function CreateTextMesh(text, fontsize, fontcolor, bgcolor, scale) {
+  // create a canvas element
+  var canvas = document.createElement('canvas');
+  var context = canvas.getContext('2d');
+
+  context.fillStyle = bgcolor;
+  context.fillRect(0, 0, canvas.width, canvas.height)
+
+  context.font = fontsize + "px Arial";
+  context.fillStyle = fontcolor;
+
+  var spacing = 4;
+
+  var lines = text.split('\n');
+  for(var i = 0 ; i < lines.length ; i++) {
+    var line = lines[i];
+    context.fillText(line, 0, (i+1) * fontsize + i*spacing);
+  }
+
+  var texture = new THREE.Texture(canvas)
+  texture.needsUpdate = true;
+
+  var material = new THREE.MeshBasicMaterial({
+    map: texture,
+    transparent: true,
+    side:THREE.DoubleSide
+  });
+
+  var mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(canvas.width*scale, canvas.height*scale),
+    material
+  );
+  return mesh;
+}
 
 function init() {
   scene = new THREE.Scene();
 
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  window.camera = camera;
   camera.position.set(0, 3, 0);
   controls = new THREE.VRControls(camera);
 
   var loader = new THREE.ObjectLoader();
   loader.load('/scene.json', function(obj) {
     scene = obj;
+    window.scene = scene;
+
+    // 카메라의 z 연장선에 크로스헤어 그리기
+    var geometry = new THREE.RingGeometry(0.04, 0.06, 4 );
+    //var geometry = new THREE.CubeGeometry(0.3, 0.3, 0.3);
+    var material = new THREE.MeshBasicMaterial({
+      color: 0x61B4D7,
+      side: THREE.DoubleSide
+    });
+    cursor = new THREE.Mesh( geometry, material );
+    scene.add(cursor);
+
 
     // 폰을 들고있는 방향에 따라서 기본 방향이 달라진다
     // 기본 방향에 맞춰서 씬 자체를 돌려두기
@@ -51,6 +102,8 @@ function init() {
       // 기본. portrait
       console.log('device orientation : portrait');
       scene.rotation.y = Math.PI/2;
+      // snakevr 방향
+      //scene.rotation.y = Math.PI;
 
     } else if(window.orientation === 90) {
       // ([display] o)
@@ -68,6 +121,45 @@ function init() {
     }
 
     var loader = new THREE.TextureLoader();
+    loader.load('/img/Insert-hyperlink-icon.png', function(texture) {
+      var material = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true
+      });
+
+      var snakeVRTrigger = new Trigger(2, material, function() {
+        setTimeout(function() {
+          var url = 'https://play.google.com/store/apps/details?id=com.Fiveminlab.SnakeVR';
+          console.log(`move link alternative : ${url}`);
+          document.location = url;
+        }, 100);
+      });
+
+      snakeVRTrigger.position.set(-1.5, 3, 2.8);
+      snakeVRTrigger.scale.set(0.5, 0.5, 0.5);
+      snakeVRTrigger.rotation.y = Math.PI;
+      snakeVRTrigger.forceVisible(true);
+      scene.add(snakeVRTrigger);
+      triggers.push(snakeVRTrigger);
+    });
+
+    loader.load('/img/next-company-logo.png', function(texture) {
+      // 최적화 하려면 불투명로고로 바꾸기
+      var material = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+      });
+
+      // 회사 로고
+      var geometry = new THREE.PlaneGeometry(1, 1);
+      var mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(2.8, 4.35, -0.2);
+      var scale = 0.003;
+      mesh.scale.set(760*scale, 517*scale, 1);
+      mesh.rotation.y = -Math.PI/2;
+      scene.add(mesh);
+    });
+
     loader.load('/img/batch-gen.png', function(texture) {
       var material = new THREE.MeshBasicMaterial({
         map: texture,
@@ -92,23 +184,16 @@ function init() {
         geometry.uvsNeedUpdate = true;
       }
 
-      // 회사 로고
-      var geometry = new THREE.PlaneGeometry(1, 1);
-      adjustTexcoord(geometry, 0.5, 1, 0.5, 0.75);
-      var mesh = new THREE.Mesh(geometry, material);
-      mesh.position.set(2.8, 4.35, -0.2);
-      mesh.scale.set(3.3, 1.95, 1);
-      mesh.rotation.y = -Math.PI/2;
-      scene.add(mesh);
+      // snake vr 설명문
+      var text = 'Snake VR\n360° Snake Game';
+      var textmesh = CreateTextMesh(text, 32, 'rgba(255,255,255,1)', 'rgba(0,0,0,0.5)', 0.007);
+      textmesh.position.set(0, 2.8, 2.7);
+      textmesh.rotation.y = Math.PI;
+      scene.add(textmesh);
+
 
       // snake vr
-      var snakeVRTrigger = new Trigger(2, material, function() {
-        setTimeout(function() {
-          var url = 'https://play.google.com/store/apps/details?id=com.Fiveminlab.SnakeVR';
-          console.log(`move link alternative : ${url}`);
-          document.location = url;
-        }, 100);
-      });
+      var snakeVRTrigger = new Trigger(2, material, null);
       adjustTexcoord(snakeVRTrigger.triggerMesh.geometry, 0.5, 1, 0.75, 1);
 
       snakeVRTrigger.position.set(0, 4.35, 2.8);
@@ -221,10 +306,19 @@ function onWindowResize() {
 
 }
 
-function animate() {
+var initialOrientation = 0;
+if(typeof(window.orientation) === 'undefined') {
+  initialOrientation = 0;
+} else {
+  initialOrientation = window.orientation;
+}
+
+var lastTimeMsec = null;
+
+function animate(nowMsec) {
   var delta = clock.getDelta();
 
-  requestAnimationFrame( animate );
+  requestAnimationFrame(animate );
   if(typeof(stats) !== 'undefined') {
     stats.update();
   }
@@ -233,6 +327,37 @@ function animate() {
   for(var i = 0 ; i < triggers.length ; i++) {
     triggers[i].update(camera, delta);
   }
+
+  if(cursor != null) {
+    var lookAtVector = new THREE.Vector3(0, 0, -1);
+    lookAtVector.applyQuaternion(camera.quaternion);
+    //lookAtVector.normalize();
+    var v = lookAtVector.multiplyScalar(2);
+
+    if(initialOrientation == 0) {
+      // 기본. portrait
+      cursor.position.set(camera.position.x-v.z , camera.position.y+v.y, camera.position.z+v.x);
+    } else if(initialOrientation === 90) {
+      // ([display] o)
+      // landscape right
+      cursor.position.set(camera.position.x+v.x, camera.position.y+v.y, camera.position.z+v.z);
+    } else if(initialOrientation === -90) {
+      // (o [display])
+      // landscape left
+      cursor.position.set(camera.position.x-v.x, camera.position.y+v.y, camera.position.z-v.z);
+    }
+    cursor.lookAt(camera.position);
+  }
+
+  // measure time
+  lastTimeMsec = lastTimeMsec || nowMsec-1000/60;
+  var deltaMsec = Math.min(200, nowMsec - lastTimeMsec);
+  lastTimeMsec = nowMsec;
+
+  // call each update function
+  updateFunctions.forEach(function(updateFn) {
+    updateFn(deltaMsec/1000, nowMsec/1000);
+  })
 
   render();
 }
